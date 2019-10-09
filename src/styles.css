@@ -1,1 +1,39 @@
 /* You can add global styles to this file, and also import other style files */
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.page-wrap {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.app-content { /* this is the main section that contains the router-outlet*/
+    flex: 1 0 auto;
+    background-image: url(/assets/images/robo-scientist-sanofi.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
+    padding-top: 64px; /* padding for allow for the fixed header */
+}
+
+.fixed-header {
+    position: fixed;
+    z-index: 999;
+    width: 100%;
+}
+
+.flex-fill { /* will take up space in a flex container */
+    flex: 1 0 auto;
+}
+
+.vert-center { 
+    display: flex;
+    align-items: center;
+}
+
+.hor-center {
+    display: flex;
+    justify-content: center;
+}
