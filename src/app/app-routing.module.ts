@@ -4,7 +4,8 @@ import { PlayerDashComponent } from './player-dash/player-dash.component';
 
 
 const routes: Routes = [
-  {path: 'player', component: PlayerDashComponent}
+  {path: 'player', component: PlayerDashComponent},
+  {path: '', redirectTo: '/player', pathMatch: 'full'}
 ];
 
 @NgModule({
