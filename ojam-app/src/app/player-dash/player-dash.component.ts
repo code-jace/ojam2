@@ -24,7 +24,7 @@ export class PlayerDashComponent implements OnInit {
   }
 
   playNext() {
-    if (this.position === this.videoIds.length - 1){
+    if (this.position === this.videoIds.length - 1) {
       this.position = 0;
     } else {
       this.position ++;
