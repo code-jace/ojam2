@@ -11,7 +11,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .app-content { /* this is the main section that contains the router-outlet*/
     flex: 1 0 auto;
-    background-image: url(/assets/images/robo-scientist-sanofi.jpg);
+
     background-repeat: no-repeat;
     background-size: cover;
     background-attachment: fixed;
