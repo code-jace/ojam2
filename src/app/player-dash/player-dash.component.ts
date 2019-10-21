@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import YouTubePlayer from 'youtube-player';
+import YTPlayer from 'yt-player';
 
 @Component({
   selector: 'app-player-dash',
@@ -10,15 +10,15 @@ export class PlayerDashComponent implements OnInit {
 
   constructor() { }
 
-  player1 = YouTubePlayer(document.getElementById('player-1'), {
-    videoId: 'M7lc1UVf-VE'
-  });
-
   ngOnInit() {
-    this.player1.playVideo()
-      .then(data => {
-        console.log('playing', data);
-      });
+    const player = new YTPlayer('#player');
+
+    player.load('KxGRhd_iWuE');
+    player.setVolume(100);
+
+    player.on('playing', () => {
+      console.log(player.getDuration());
+    });
   }
 
 }
