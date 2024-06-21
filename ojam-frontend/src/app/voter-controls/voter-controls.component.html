@@ -1,0 +1,19 @@
+<div class="container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Session Controls</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <p *ngIf="connected">Connected to session {{ sessionId }}</p>
+        <div *ngIf="qrCodeUrl">
+            <img [src]="qrCodeUrl" alt="QR Code" />
+        </div>
+  
+        <!-- Manual session ID input -->
+        <mat-form-field>
+          <input matInput placeholder="Enter Session ID" [(ngModel)]="manualSessionId">
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="navigateToVoterPage()" [disabled]="!manualSessionId">Go to Voter Page</button>
+      </mat-card-content>
+    </mat-card>
+  </div>

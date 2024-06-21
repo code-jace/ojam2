@@ -13,18 +13,10 @@ export class SocketService {
     if (typeof window !== 'undefined') {
       
       this.socket = io('http://localhost:3000/'); // Replace with your backend server URL
-
       this.socket.on('connect', () => {
         console.log('Connected to server');
       });
-  
-      this.socket.on('message', (data: any) => {
-        console.log('Received message:', data);
-      });
-  
-      this.socket.on('disconnect', () => {
-        console.log('Disconnected from server');
-      });  }
+    }
   }
 
   listen(event: string): Observable<any> {
@@ -35,8 +27,12 @@ export class SocketService {
     });
   }
 
-  emit(event: string, data: any): void {
-    this.socket?.emit(event, data);
+  emit(event: string, ...args: any[]) {
+    this.socket?.emit(event, ...args);
+  }
+
+  on(event: string, callback: (...args: any[]) => void) {
+    this.socket?.on(event, callback);
   }
 
   disconnect(): void {
