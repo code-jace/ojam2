@@ -9,6 +9,6 @@ export const routes: Routes = [
     { path: 'sesh', component: VoterControlsComponent },
     { path: 'sesh/:sessionId', component: VoterControlsComponent },
     // You can add more routes here for other components or features
-    { path: '/', redirectTo: 'home', pathMatch: 'full' }, 
+    { path: '', redirectTo: 'home', pathMatch: 'full' }, 
     { path: '**', redirectTo: 'home' }
 ];
