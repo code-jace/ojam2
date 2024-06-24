@@ -33,7 +33,9 @@ const io = new SocketIOServer(server, {
   },
 });
 
-app.use(cors({ origin: 'http://localhost:4200' }));
+// app.use(cors({ origin: 'http://localhost:4200' }));
+app.use(cors({ origin: 'https://code-jace.github.io/ojam2/' }));
+
 
 // Example route
 app.get('/', (req, res) => {
