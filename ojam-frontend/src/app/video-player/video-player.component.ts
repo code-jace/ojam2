@@ -100,7 +100,9 @@ export class VideoPlayerComponent implements OnInit {
 
   generateSessionUrl() {
     if (this.sessionId && typeof window !== "undefined") {
-      this.sessionUrl = `${window.location.origin}/sesh/${this.sessionId}`;
+      // this.sessionUrl = `${window.location.origin}/sesh/${this.sessionId}`;
+      this.sessionUrl = `https://code-jace.github.io/ojam2/sesh/${this.sessionId}`;
+
       this.generateQRCode();
 
     } else {

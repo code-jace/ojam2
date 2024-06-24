@@ -133,7 +133,7 @@ export class VoterControlsComponent implements OnInit, OnDestroy {
 
   generateSessionUrl() {
     if (this.sessionId && typeof window !== "undefined") {
-      this.sessionUrl = `${window.location.origin}/sesh/${this.sessionId}`;
+      this.sessionUrl = `${window.location.href}`;
       this.generateQRCode();
 
     } else {
