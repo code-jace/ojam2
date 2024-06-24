@@ -1,11 +1,21 @@
-{{sessionUrl}}
-
-<div *ngIf="qrCodeUrl">
-    <img [src]="qrCodeUrl" alt="QR Code" />
-</div>
-
-<youtube-player
-      [videoId]="currentVideo"
+<div class="video-player-container">
+  <mat-card class="video-details-card">
+    <mat-card-header>
+      <mat-card-title>Session: {{sessionName}}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>Session URL: {{sessionUrl}}</p>
+      <div *ngIf="qrCodeUrl" class="qr-code">
+        <img [src]="qrCodeUrl" alt="QR Code" />
+      </div>
+    </mat-card-content>
+  </mat-card>
+  
+  <mat-card class="video-player-card">
+    <youtube-player
+      [videoId]="currentVideo?.videoId || ''"
       (ready)="savePlayer($event)"
-      (change)="onStateChange($event)"
-    ></youtube-player>
+      (change)="onStateChange($event)">
+    </youtube-player>
+  </mat-card>
+</div>

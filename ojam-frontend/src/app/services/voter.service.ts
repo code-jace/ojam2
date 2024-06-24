@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SocketService } from './socket.service';
-import { JoinSessionRequest, ConnectedResponse, ErrorResponse, SessionRequest, AddVideoRequest, SessionResponse } from '../models/socket-events';
+import { JoinSessionRequest, ConnectedResponse, ErrorResponse, SessionRequest, AddVideoRequest, SessionResponse, VideoUpdate } from '../models/socket-events';
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +39,11 @@ export class VoterService {
   onSessionClosed(callback: (data: SessionResponse) => void){
     this.socketService.on('sessionClosed', callback);
   }
+
+  onUpdateVideoDetails(callback: (data: VideoUpdate) => void) {
+    this.socketService.on('updateVideoDetails', callback);
+  }
+
 
   removeAllListeners() {
     this.socketService.removeListener('connected');

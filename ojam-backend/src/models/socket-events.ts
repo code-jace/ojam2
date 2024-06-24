@@ -10,6 +10,7 @@ export interface JoinSessionRequest {
 
 export interface ConnectedResponse {
     sessionId: string;
+    sessionName: string;
     username: string;
 }
 
@@ -24,10 +25,7 @@ export interface SessionResponse {
 export interface AddVideoRequest {
     sessionId: string;
     videoId: string;
-}
-
-export interface VideoAddedResponse {
-    videoId: string;
+    videoName: string;
 }
 
 export interface VetoCurrentVideoRequest {
@@ -37,8 +35,16 @@ export interface VetoCurrentVideoRequest {
 
 export interface VideoResponse {
     videoId: string;
+    videoName: string;
 }
 
 export interface ErrorResponse {
     message: string;
+}
+
+export interface VideoUpdate {
+    videoId: string;
+    videoName: string;
+    duration: number;
+    currentTime: number;
 }

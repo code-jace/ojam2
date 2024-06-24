@@ -1,41 +1,45 @@
 <div class="container">
-    <mat-card>
-      <mat-card-header>
-        <mat-card-title>Session Controls</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-                
-        <ng-container *ngIf="connected">
-          <p *ngIf="connected">Connected to session {{ sessionId }}</p>
-          <div *ngIf="qrCodeUrl">
-              <img [src]="qrCodeUrl" alt="QR Code" />
-          </div>
-    
-         
-          <br>
-          <button mat-raised-button color="tertiary" (click)="vetoVideo()">Veto</button>
-  
-          <br>
-  
-          <mat-form-field appearance="fill">
-            <input matInput [(ngModel)]="videoId" placeholder="Enter YouTube video Id">
+  <mat-card class="control-card">
+    <mat-card-header>
+      <mat-card-title>Voter</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <ng-container *ngIf="connected">
+        <div *ngIf="connected" (click)="toggleShowQr()">Connected to session {{ sessionId }}: {{ sessionName }}</div>
+        <div class="qr-code" *ngIf="qrCodeUrl && showQr">
+          <img [src]="qrCodeUrl" alt="QR Code" />
+        </div>
+
+        <div *ngIf="currentVideoName !== ''">
+          <h2>Currently Playing</h2>
+          <p>{{ currentVideoName }}</p>
+          <mat-progress-bar mode="determinate" [value]="currentVideoProgress"></mat-progress-bar>
+          <p>Progress: {{ currentVideoProgress }}%</p>
+          
+        </div>
+
+        <div class="button-container" *ngIf="currentVideoName !== ''">
+          <button mat-flat-button color="warn" (click)="vetoVideo()">Veto</button>
+        </div>
+
+
+        <div class="full-width-section">
+          <mat-form-field>
+            <input matInput placeholder="Search" [(ngModel)]="query">
           </mat-form-field>
-          <button mat-raised-button color="primary" (click)="addVideo()">Add Video</button>
-        </ng-container>
+          <button mat-flat-button color="primary" (click)="openVideoSearchDialog()">Search Videos</button>
+        </div>
 
 
-        <br>
+      </ng-container>
 
-        <br>
-
-         <!-- Manual session ID input -->
-         <mat-form-field>
+      <div class="full-width-section" *ngIf="!connected">
+        <mat-form-field>
           <input matInput placeholder="Enter Session ID" [(ngModel)]="manualSessionId">
         </mat-form-field>
-        <button mat-raised-button color="primary" (click)="navigateToVoterPage()" [disabled]="!manualSessionId">Go to Voter Page</button>
-
-        
-
-      </mat-card-content>
-    </mat-card>
-  </div>
+        <button mat-flat-button color="primary" (click)="navigateToVoterPage()" [disabled]="!manualSessionId">Go to
+          Voter Page</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

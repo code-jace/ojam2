@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Search YouTube Videos</h2>
+<div mat-dialog-content>
+  <mat-form-field class="full-width">
+    <input matInput [(ngModel)]="query" placeholder="Search for videos">
+  </mat-form-field>
+  <button mat-flat-button color="primary" (click)="searchVideos()">Search</button>
+  <div *ngIf="searchResults.length > 0">
+    <mat-list>
+      <mat-list-item *ngFor="let video of searchResults" (click)="selectVideo(video)" [class.selected]="video === selectedVideo" style="padding: 5px; display: flex; align-items: center;">
+        <button mat-icon-button color="primary" (click)="quickSelect(video)">
+          <mat-icon>check_circle</mat-icon>
+        </button>
+        <strong matLine>{{ video.title }} </strong>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</div>
+<div mat-dialog-actions style="margin-top: 5px;">
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="!selectedVideo" (click)="confirmSelection()">Select</button>
+</div>

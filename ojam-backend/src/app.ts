@@ -16,11 +16,10 @@ import {
   CreateSessionResponse,
   JoinSessionRequest,
   ErrorResponse,
-  VideoAddedResponse,
   VideoResponse,
   SessionRequest,
   VetoCurrentVideoRequest,
-  SessionResponse,
+  VideoUpdate,
 } from './models/socket-events';
 import { Session } from './models/session';
 
@@ -51,7 +50,7 @@ const checkAndHandleVeto = (session: Session) => {
 
     const nextVideo = progressVideo(session.id, true);
     if (nextVideo) {
-      const response: VideoResponse = { videoId: nextVideo.id };
+      const response: VideoResponse = { videoId: nextVideo.id, videoName: nextVideo.title };
       io.to(session.id).emit('nextVideo', response);
       session.vetoVotes.clear();
     }
@@ -84,7 +83,7 @@ io.on('connection', (socket) => {
     socket.on('videoEnd', (data: SessionRequest) => {
       const vid = progressVideo(data.sessionId);
       if (vid) {
-        const response: VideoResponse = { videoId: vid.id }
+        const response: VideoResponse = { videoId: vid.id, videoName: vid.title}
         socket.emit('nextVideo', response);
       } else {
         const sesh = getSession(sessionId);
@@ -94,18 +93,21 @@ io.on('connection', (socket) => {
         socket.emit('endOfPlaylist');
       }
 
+    });
+
+    socket.on('updateVideoDetails', (data: VideoUpdate) => {
+      socket.to(sessionId).emit('updateVideoDetails', data);
     })
 
   });
 
   socket.on('joinSession', (data: JoinSessionRequest) => {
     const { sessionId, username } = data;
-    console.log(`Trying to join ${sessionId}`);
     const session = getSession(sessionId);
     if (session) {
       addVoterToSession(sessionId, { id: socket.id, username });
       socket.join(sessionId);
-      const response: ConnectedResponse = { sessionId, username };
+      const response: ConnectedResponse = { sessionId, sessionName: session.sessionName, username };
       socket.emit('connected', response);
       io.to(sessionId).emit('voterJoined', username);
       console.log(`Voter ${username} joined session ${sessionId}`);
@@ -116,9 +118,9 @@ io.on('connection', (socket) => {
   });
 
   socket.on('addVideo', (data: AddVideoRequest) => {
-    const { sessionId, videoId } = data;
-    addVideoToQueue(sessionId, videoId);
-    const response: VideoAddedResponse = { videoId };
+    const { sessionId, videoId, videoName } = data;
+    addVideoToQueue(sessionId, videoId, videoName);
+    const response: VideoResponse = { videoId, videoName };
     socket.emit('videoAdded', response);
     const sesh = getSession(sessionId)
     if (sesh) {
@@ -129,9 +131,8 @@ io.on('connection', (socket) => {
           // after 1st video progress as normal
           vid = progressVideo(data.sessionId)!;
         }
-        console.log(sessionId, vid.id)
         if (videoId) {
-          const response: VideoResponse = { videoId: vid.id }
+          const response: VideoResponse = { videoId: vid.id, videoName: vid.title }
           sesh.playlistEnded = false;
           io.to(sessionId).emit('nextVideo', response);
         }
@@ -144,9 +145,8 @@ io.on('connection', (socket) => {
   socket.on('videoEnded', (data: SessionRequest) => {
     const { sessionId } = data;
     const vid = progressVideo(data.sessionId);
-    console.log(sessionId, vid)
     if (vid) {
-      const response: VideoResponse = { videoId: vid.id }
+      const response: VideoResponse = { videoId: vid.id, videoName: vid.title }
       io.to(sessionId).emit('nextVideo', response);
     }
 
@@ -172,15 +172,16 @@ io.on('connection', (socket) => {
         removeVoterFromSession(sessionId, socket.id);
         console.log(`Voter ${socket.id} left session ${sessionId}. Voters left: ${session.voters.length}`);
         io.to(sessionId).emit('voterLeft', socket.id);
-        checkAndHandleVeto(session);
-
-        // If the video player disconnects, close the session
-        if (session.videoPlayerId === socket.id) {
-          delete sessions[sessionId];
-          io.to(sessionId).emit('sessionEnded');
-          console.log(`Session ${sessionId} ended`);
-        }
+        checkAndHandleVeto(session);        
+        
       }
+
+      // If the video player disconnects, close the session
+      if (session.videoPlayerId === socket.id) {
+        delete sessions[sessionId];
+        io.to(sessionId).emit('sessionClosed', sessionId); // Notify all clients that the session is closed
+        console.log(`Session ${sessionId} closed as the video player disconnected`);
+      } 
     });
     
   });

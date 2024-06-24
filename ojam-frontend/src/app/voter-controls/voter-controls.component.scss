@@ -1,0 +1,46 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .control-card {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+  
+  .qr-code {
+    text-align: center;
+    margin: 1rem 0;
+  
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
+  
+  .button-container {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
+  
+    button {
+      width: 100%;
+      max-width: 200px;
+    }
+  }
+  
+  .full-width-section {
+    margin-top: 2rem;
+  
+    mat-form-field {
+      width: 100%;
+    }
+  
+    button {
+      width: 100%;
+    }
+  }

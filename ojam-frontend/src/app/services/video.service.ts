@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { SocketService } from './socket.service';
-import { CreateSessionResponse, SessionRequest, VideoResponse } from '../models/socket-events';
+import { CreateSessionResponse, SessionRequest, VideoResponse, VideoUpdate } from '../models/socket-events';
+
 
 @Injectable({
   providedIn: 'root'
@@ -45,4 +46,7 @@ export class VideoService {
     this.socketService.on('nextVideo', callback);
   }
 
+  updateVideoDetails(data: VideoUpdate) {
+    this.socketService.emit('updateVideoDetails', data);
+  }
 }

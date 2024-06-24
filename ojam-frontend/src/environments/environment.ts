@@ -1,3 +1,4 @@
 export const environment = {
-    backendUrl: ''
+    backendUrl: '',
+    youtubeApiKey: 'AIzaSyAnbxFWlmDi8micrkLJAdxgI7250lQSShw'
 };
