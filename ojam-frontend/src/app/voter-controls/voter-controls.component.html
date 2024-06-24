@@ -14,6 +14,9 @@
           <input matInput placeholder="Enter Session ID" [(ngModel)]="manualSessionId">
         </mat-form-field>
         <button mat-raised-button color="primary" (click)="navigateToVoterPage()" [disabled]="!manualSessionId">Go to Voter Page</button>
+        <br>
+        <button mat-raised-button color="primary" (click)="skipSong()">Skip</button>
+
       </mat-card-content>
     </mat-card>
   </div>

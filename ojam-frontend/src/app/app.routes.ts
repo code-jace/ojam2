@@ -1,10 +1,8 @@
 import { Routes } from '@angular/router';
-import { ChatComponent } from './chat/chat.component';
 import { VideoPlayerComponent } from './video-player/video-player.component';
 import { VoterControlsComponent } from './voter-controls/voter-controls.component';
 
 export const routes: Routes = [
-    { path: 'chat', component: ChatComponent },
     { path: 'player', component: VideoPlayerComponent },
     { path: 'sesh', component: VoterControlsComponent },
     { path: 'sesh/:sessionId', component: VoterControlsComponent },

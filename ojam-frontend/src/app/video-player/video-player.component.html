@@ -1,6 +1,11 @@
-<p>video-player works!</p>
 {{sessionUrl}}
 
 <div *ngIf="qrCodeUrl">
     <img [src]="qrCodeUrl" alt="QR Code" />
 </div>
+
+<youtube-player *ngIf="currentVideo"
+      [videoId]="currentVideo"
+      (ready)="savePlayer($event)"
+      (change)="onStateChange($event)"
+    ></youtube-player>

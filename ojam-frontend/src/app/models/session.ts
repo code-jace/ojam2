@@ -4,14 +4,9 @@ export interface Session {
     videoQueue: string[];
     currentVideoIndex: number;
     voters: Voter[];
-}
-
-export interface Voter {
+  }
+  
+  export interface Voter {
     id: string;
     username: string;
-}
-
-export interface Video {
-    id: string;
-    title: string;
-}
+  }

@@ -1,61 +1,80 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { VoterService } from '../services/voter.service';
+import { JoinSessionRequest, ConnectedResponse, ErrorResponse } from '../models/socket-events';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SocketService } from '../services/socket.service';
-import { QrCodeService } from '../services/qr-code.service';
 import { CommonModule } from '@angular/common';
+import { QrCodeService } from '../services/qr-code.service';
 import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card'
-import { MatButtonModule } from '@angular/material/button'
-import { MatFormFieldModule } from '@angular/material/form-field'
-import { MatInputModule } from '@angular/material/input'
-
+import { MatFormField } from '@angular/material/form-field';
+import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
+import { MatInput } from '@angular/material/input';
 
 @Component({
   selector: 'app-voter-controls',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatCardModule, MatButtonModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, FormsModule, MatFormField, MatCard, MatCardContent, MatCardTitle, MatCardHeader, MatInput],
   templateUrl: './voter-controls.component.html',
-  styleUrl: './voter-controls.component.scss'
+  styleUrls: ['./voter-controls.component.scss']
 })
-export class VoterControlsComponent implements OnInit {
+export class VoterControlsComponent implements OnInit, OnDestroy {
   sessionId: string|null = null;
+  username: string = '';
+
   sessionUrl: string = '';
   qrCodeUrl: string|null = null;
 
+  manualSessionId: string = '';
   connected: boolean = false;
 
-  manualSessionId: string = '';
-
-  constructor(private route: ActivatedRoute, private socketService: SocketService, private qrCodeService: QrCodeService, private router: Router){}
+  constructor(private voterService: VoterService, private qrCodeService: QrCodeService, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit(): void {
+
     this.route.params.subscribe(params => {
       this.sessionId = params['sessionId'];
       if(this.sessionId && this.sessionId !== '') {
-        this.joinSession();
+        const userName = prompt('Enter Username') || 'Anon';
+        this.joinSession(this.sessionId, userName);
       }
     });
 
-    this.socketService.on('connect_error', (error: any) => {
-      console.error('Socket connection error:', error);
-      // Handle error if needed
+
+    this.voterService.onConnected((data: ConnectedResponse) => {
+      this.sessionId = data.sessionId;
+      this.username = data.username;
+      this.connected = true;
     });
 
-    this.socketService.on('disconnect', () => {
-      console.log('Disconnected from socket.');
-      // Handle disconnect if needed
-      this.connected = false;
+    this.voterService.onError((data: ErrorResponse) => {
+      alert(data.message);
+    });
+
+    this.voterService.onVoterJoined((username: string) => {
+      console.log(`${username} joined the session`);
+    });
+
+    this.voterService.onVoterLeft((username: string) => {
+      console.log(`${username} left the session`);
     });
   }
 
-  joinSession = (): void => {
-    console.log(`Joined session with ID: ${this.sessionId}`);
-    this.socketService.emit('joinSessionControl', this.sessionId);
-    this.connected = true;
-    this.generateSessionUrl();
-
-
+  skipSong():void {
+    if(this.sessionId){
+      const data = {sessionId: this.sessionId}
+      this.voterService.vetoCurrentVideo(data);
+    }
+    
   }
+
+  ngOnDestroy(): void {
+    this.voterService.removeAllListeners();
+  }
+
+  joinSession(sessionId: string, username: string) {
+    const data: JoinSessionRequest = { sessionId, username };
+    this.voterService.joinSession(data);
+  }
+
 
   generateSessionUrl() {
     if (this.sessionId && typeof window !== "undefined") {

@@ -1,35 +1,71 @@
-import { Component } from '@angular/core';
-import { SocketService } from '../services/socket.service';
+import { Component, OnInit } from '@angular/core';
 import { QrCodeService } from '../services/qr-code.service';
 import { CommonModule } from '@angular/common';
+import { CreateSessionResponse, VideoSkippedResponse } from '../models/socket-events';
+import { VideoService } from '../services/video.service';
+import { YoutubePlayerComponent } from 'ngx-youtube-player';
 
 @Component({
   selector: 'app-video-player',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, YoutubePlayerComponent],
   templateUrl: './video-player.component.html',
   styleUrl: './video-player.component.scss'
 })
-export class VideoPlayerComponent {
+export class VideoPlayerComponent implements OnInit {
 
   sessionId: string = ''; // Store current session ID or room name
-  sessionUrl: string ='';
-  qrCodeUrl: string|null = null;
+  sessionUrl: string = '';
+  sessionName: string = '';
+
+  qrCodeUrl: string | null = null;
+
+  currentVideo: string = '';
+
+  player: YT.Player|null = null;
 
 
-  constructor(private socketService: SocketService, private qrCodeService: QrCodeService) {
-    this.createSession();
-  }
+  constructor(private videoService: VideoService, private qrCodeService: QrCodeService) { }
 
-  createSession() {
-    this.socketService.emit('createSession');
+  ngOnInit(): void {
 
-    this.socketService.on('sessionCreated', (sessionId: string) => {
-      this.sessionId = sessionId;
-      console.log(`Session created with ID: ${this.sessionId}`);
+    this.videoService.onSessionCreated((data: CreateSessionResponse) => {
+      this.sessionId = data.sessionId;
+      this.sessionName = data.sessionName;
       this.generateSessionUrl();
 
+      this.videoService.getCurrentVideo(this.sessionId);
     });
+
+    this.videoService.onCurrentVideo((data: VideoSkippedResponse) => {
+
+      this.currentVideo = data.nextVideo;
+      this.player?.loadVideoById(this.currentVideo);
+      this.player?.playVideo();
+
+    });
+
+    this.videoService.onVideoSkipped((data: VideoSkippedResponse) => {
+
+      this.currentVideo = data.nextVideo;
+      this.player?.loadVideoById(this.currentVideo);
+      this.player?.playVideo();
+
+    });
+
+    // Create a session on component initialization
+    this.videoService.createSession('Default Session Name');
+  }
+
+  savePlayer(player: YT.Player) {
+    this.player = player;
+    this.player?.playVideo();
+    
+    console.log("player instance", player);
+  }
+
+  onStateChange(event: any) {
+    console.log("player state", event.data);
   }
 
   generateSessionUrl() {

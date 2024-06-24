@@ -1,42 +1,39 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
+import { environment } from '../../environments/environment';
+import {
+  AddVideoRequest,
+  ConnectedResponse,
+  CreateSessionResponse,
+  JoinSessionRequest,
+  ErrorResponse,
+  VideoAddedResponse,
+  VideoSkippedResponse
+} from '../models/socket-events';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
-  
   private socket: Socket | null = null;
 
-  constructor() {    
+  constructor() {
     if (typeof window !== 'undefined') {
       
-      this.socket = io('http://localhost:3000/'); // Replace with your backend server URL
-      this.socket.on('connect', () => {
-        console.log('Connected to server');
-      });
+      this.socket = io(environment.backendUrl);
+
     }
   }
 
-  listen(event: string): Observable<any> {
-    return new Observable((subscriber) => {
-      this.socket?.on(event, (data) => {
-        subscriber.next(data);
-      });
-    });
-  }
-
-  emit(event: string, ...args: any[]) {
-    this.socket?.emit(event, ...args);
-  }
-
-  on(event: string, callback: (...args: any[]) => void) {
+  on(event: string, callback: (data: any) => void) {
     this.socket?.on(event, callback);
   }
 
-  disconnect(): void {
-    this.socket?.disconnect();
+  emit(event: string, data: any) {
+    this.socket?.emit(event, data);
   }
 
+  removeListener(event: string) {
+    this.socket?.off(event);
+  }
 }
