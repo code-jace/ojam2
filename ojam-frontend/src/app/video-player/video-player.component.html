@@ -4,7 +4,7 @@
     <img [src]="qrCodeUrl" alt="QR Code" />
 </div>
 
-<youtube-player *ngIf="currentVideo"
+<youtube-player
       [videoId]="currentVideo"
       (ready)="savePlayer($event)"
       (change)="onStateChange($event)"

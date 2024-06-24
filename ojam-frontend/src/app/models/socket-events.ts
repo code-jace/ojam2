@@ -3,9 +3,13 @@ export interface AddVideoRequest {
     videoId: string;
 }
 
-export interface VetoCurrentVideoRequest {
+export interface SessionRequest {
     sessionId: string;
     //videoId: string;
+}
+
+export interface SessionResponse {
+    sessionId: string;
 }
 
 
@@ -32,6 +36,6 @@ export interface VideoAddedResponse {
     videoId: string;
 }
 
-export interface VideoSkippedResponse {
-    nextVideo: string;
+export interface VideoResponse {
+    videoId: string;
 }

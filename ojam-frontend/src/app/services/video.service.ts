@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SocketService } from './socket.service';
-import { CreateSessionResponse, VideoSkippedResponse } from '../models/socket-events';
+import { CreateSessionResponse, SessionRequest, VideoResponse } from '../models/socket-events';
 
 @Injectable({
   providedIn: 'root'
@@ -21,13 +21,28 @@ export class VideoService {
     this.socketService.emit('getCurrentVideo', {sessionId});
   }
 
-  onCurrentVideo(callback: (data: VideoSkippedResponse) => void) {
+  onCurrentVideo(callback: (data: VideoResponse) => void) {
     this.socketService.on('currentVideo', callback);
   }
 
-  onVideoSkipped(callback: (data: VideoSkippedResponse) => void) {
+  onVideoSkipped(callback: (data: VideoResponse) => void) {
     this.socketService.on('videoSkipped', callback);
   }
 
+  onEndOfPlaylist(callback: () => void) {
+    this.socketService.on('endOfPlaylist', callback);
+  }
+
+  onVideoAdded(callback: (data: VideoResponse) => void) {
+    this.socketService.on('videoAdded', callback);
+  }
+
+  videoEnd(data: SessionRequest) {
+    this.socketService.emit('videoEnd', data)
+  }
+
+  onNextVideo(callback: (data: VideoResponse) => void) {
+    this.socketService.on('nextVideo', callback);
+  }
 
 }

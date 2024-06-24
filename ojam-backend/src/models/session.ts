@@ -1,9 +1,12 @@
 export interface Session {
     id: string;
     sessionName: string;
-    videoQueue: string[];
+    videoPlayerId: string;
+    videoQueue: Video[];
     currentVideoIndex: number;
+    playlistEnded: boolean;
     voters: Voter[];
+    vetoVotes: Set<string>; // voterIds
 }
 
 export interface Voter {
@@ -14,4 +17,5 @@ export interface Voter {
 export interface Video {
     id: string;
     title: string;
+    vetoed: boolean;
 }

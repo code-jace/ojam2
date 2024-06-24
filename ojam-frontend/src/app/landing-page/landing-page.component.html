@@ -1,0 +1,23 @@
+<div class="container">
+    <h1>Welcome to OJam!</h1>
+    <h2>What do you want to do?</h2>
+    
+    <div class="options">
+      <div class="option" (click)="navigateToPlayerPage()">
+        <div class="option-content">
+          <h3>Start a session on this device!</h3>
+          <button mat-raised-button color="primary">Start Session</button>
+        </div>
+      </div>
+    
+      <div class="option">
+        <div class="option-content">
+          <h3>Connect to a session by ID!</h3>
+          <mat-form-field>
+            <input matInput placeholder="Enter Session ID" [(ngModel)]="manualSessionId">
+          </mat-form-field>
+          <button mat-raised-button color="primary" (click)="navigateToVoterPage()" [disabled]="!manualSessionId">Go to Voter Page</button>
+        </div>
+      </div>
+    </div>
+  </div>

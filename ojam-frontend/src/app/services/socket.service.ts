@@ -1,15 +1,6 @@
 import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { environment } from '../../environments/environment';
-import {
-  AddVideoRequest,
-  ConnectedResponse,
-  CreateSessionResponse,
-  JoinSessionRequest,
-  ErrorResponse,
-  VideoAddedResponse,
-  VideoSkippedResponse
-} from '../models/socket-events';
 
 @Injectable({
   providedIn: 'root'

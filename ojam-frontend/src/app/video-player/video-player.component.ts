@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { QrCodeService } from '../services/qr-code.service';
 import { CommonModule } from '@angular/common';
-import { CreateSessionResponse, VideoSkippedResponse } from '../models/socket-events';
+import { CreateSessionResponse, SessionRequest, VideoResponse } from '../models/socket-events';
 import { VideoService } from '../services/video.service';
 import { YoutubePlayerComponent } from 'ngx-youtube-player';
 
@@ -22,8 +22,10 @@ export class VideoPlayerComponent implements OnInit {
 
   currentVideo: string = '';
 
-  player: YT.Player|null = null;
+  player: YT.Player | null = null;
+  playlistEnded: boolean = true;
 
+  playerState = 0;
 
   constructor(private videoService: VideoService, private qrCodeService: QrCodeService) { }
 
@@ -34,24 +36,21 @@ export class VideoPlayerComponent implements OnInit {
       this.sessionName = data.sessionName;
       this.generateSessionUrl();
 
-      this.videoService.getCurrentVideo(this.sessionId);
     });
 
-    this.videoService.onCurrentVideo((data: VideoSkippedResponse) => {
-
-      this.currentVideo = data.nextVideo;
-      this.player?.loadVideoById(this.currentVideo);
-      this.player?.playVideo();
+    this.videoService.onVideoSkipped((data: VideoResponse) => {
+      this.loadAndPlayVideo(data.videoId);
 
     });
 
-    this.videoService.onVideoSkipped((data: VideoSkippedResponse) => {
-
-      this.currentVideo = data.nextVideo;
-      this.player?.loadVideoById(this.currentVideo);
-      this.player?.playVideo();
-
+    this.videoService.onEndOfPlaylist(() => {
+      this.player?.stopVideo();
+      this.playlistEnded = true;
     });
+
+    this.videoService.onNextVideo((data: VideoResponse) => {
+      this.loadAndPlayVideo(data.videoId)      
+    })
 
     // Create a session on component initialization
     this.videoService.createSession('Default Session Name');
@@ -59,13 +58,24 @@ export class VideoPlayerComponent implements OnInit {
 
   savePlayer(player: YT.Player) {
     this.player = player;
-    this.player?.playVideo();
-    
     console.log("player instance", player);
   }
 
   onStateChange(event: any) {
     console.log("player state", event.data);
+
+    this.playerState = event.data;
+
+    if (this.playerState === YT.PlayerState.ENDED) {
+      const req: SessionRequest = { sessionId: this.sessionId }
+      this.videoService.videoEnd(req);
+    }
+  }
+
+  loadAndPlayVideo(videoId: string) {
+    this.currentVideo = videoId;
+    this.player?.loadVideoById(this.currentVideo);
+    this.player?.playVideo();
   }
 
   generateSessionUrl() {

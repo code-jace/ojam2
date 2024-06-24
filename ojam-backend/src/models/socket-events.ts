@@ -13,7 +13,11 @@ export interface ConnectedResponse {
     username: string;
 }
 
-export interface GetCurrentVideoRequest {
+export interface SessionRequest {
+    sessionId: string;
+}
+
+export interface SessionResponse {
     sessionId: string;
 }
 
@@ -31,8 +35,8 @@ export interface VetoCurrentVideoRequest {
     //videoId: string;
 }
 
-export interface VideoSkippedResponse {
-    nextVideo: string;
+export interface VideoResponse {
+    videoId: string;
 }
 
 export interface ErrorResponse {

@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { VoterService } from '../services/voter.service';
-import { JoinSessionRequest, ConnectedResponse, ErrorResponse } from '../models/socket-events';
+import { JoinSessionRequest, ConnectedResponse, ErrorResponse, AddVideoRequest, SessionResponse } from '../models/socket-events';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { QrCodeService } from '../services/qr-code.service';
@@ -8,11 +8,12 @@ import { FormsModule } from '@angular/forms';
 import { MatFormField } from '@angular/material/form-field';
 import { MatCard, MatCardContent, MatCardHeader, MatCardTitle } from '@angular/material/card';
 import { MatInput } from '@angular/material/input';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-voter-controls',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatFormField, MatCard, MatCardContent, MatCardTitle, MatCardHeader, MatInput],
+  imports: [CommonModule, FormsModule, MatFormField, MatCard, MatCardContent, MatCardTitle, MatCardHeader, MatInput, MatButton],
   templateUrl: './voter-controls.component.html',
   styleUrls: ['./voter-controls.component.scss']
 })
@@ -25,6 +26,9 @@ export class VoterControlsComponent implements OnInit, OnDestroy {
 
   manualSessionId: string = '';
   connected: boolean = false;
+
+  videoId: string = '';
+
 
   constructor(private voterService: VoterService, private qrCodeService: QrCodeService, private route: ActivatedRoute, private router: Router) {}
 
@@ -43,10 +47,20 @@ export class VoterControlsComponent implements OnInit, OnDestroy {
       this.sessionId = data.sessionId;
       this.username = data.username;
       this.connected = true;
+
+      this.voterService.onSessionClosed((data: SessionResponse) => {
+        if (data.sessionId === this.sessionId) {
+          alert('The session has been closed.');
+          this.router.navigate(['/']);
+        }
+      });
     });
 
-    this.voterService.onError((data: ErrorResponse) => {
+    this.voterService.onSessionNotFound((data: ErrorResponse) => {
+      console.log(data);
       alert(data.message);
+      this.router.navigate(['/']);
+
     });
 
     this.voterService.onVoterJoined((username: string) => {
@@ -58,12 +72,10 @@ export class VoterControlsComponent implements OnInit, OnDestroy {
     });
   }
 
-  skipSong():void {
-    if(this.sessionId){
-      const data = {sessionId: this.sessionId}
-      this.voterService.vetoCurrentVideo(data);
+  vetoVideo() {
+    if (this.sessionId) {
+      this.voterService.vetoCurrentVideo({sessionId: this.sessionId});
     }
-    
   }
 
   ngOnDestroy(): void {
@@ -75,6 +87,15 @@ export class VoterControlsComponent implements OnInit, OnDestroy {
     this.voterService.joinSession(data);
   }
 
+  addVideo(): void {
+    if (this.sessionId && this.videoId) {
+      const req: AddVideoRequest = {sessionId: this.sessionId, videoId: this.videoId}
+      this.voterService.addVideo(req);
+      this.videoId = ''; // Clear the input field
+    }
+
+
+  }
 
   generateSessionUrl() {
     if (this.sessionId && typeof window !== "undefined") {

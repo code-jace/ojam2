@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { SocketService } from './socket.service';
-import { JoinSessionRequest, ConnectedResponse, ErrorResponse, VetoCurrentVideoRequest } from '../models/socket-events';
+import { JoinSessionRequest, ConnectedResponse, ErrorResponse, SessionRequest, AddVideoRequest, SessionResponse } from '../models/socket-events';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +16,7 @@ export class VoterService {
     this.socketService.on('connected', callback);
   }
 
-  onError(callback: (data: ErrorResponse) => void) {
+  onSessionNotFound(callback: (data: ErrorResponse) => void) {
     this.socketService.on('sessionNotFound', callback);
   }
 
@@ -28,8 +28,16 @@ export class VoterService {
     this.socketService.on('voterLeft', callback);
   }
 
-  vetoCurrentVideo(data: VetoCurrentVideoRequest) {
+  vetoCurrentVideo(data: SessionRequest) {
     this.socketService.emit('vetoVideo', data);
+  }
+
+  addVideo(data: AddVideoRequest) {
+    this.socketService.emit('addVideo', data);
+  }
+
+  onSessionClosed(callback: (data: SessionResponse) => void){
+    this.socketService.on('sessionClosed', callback);
   }
 
   removeAllListeners() {
@@ -37,5 +45,6 @@ export class VoterService {
     this.socketService.removeListener('sessionNotFound');
     this.socketService.removeListener('voterJoined');
     this.socketService.removeListener('voterLeft');
+    this.socketService.removeListener('sessionClosed');
   }
 }

@@ -1,15 +1,18 @@
-import { Session, Voter } from '../models/session';
+import { Session, Video, Voter } from '../models/session';
 
 // In-memory sessions store
 const sessions: { [key: string]: Session } = {};
 
-export const createSession = (id: string, sessionName: string): Session => {
+export const createSession = (id: string, sessionName: string, videoPlayerId: string): Session => {
   const session: Session = {
     id,
     sessionName,
-    videoQueue: ['dtyOoaW6EyQ', '0kOTvMf2YuY'],
+    videoPlayerId,
+    videoQueue: [],
     currentVideoIndex: 0,
+    playlistEnded: true,
     voters: [],
+    vetoVotes: new Set()
   };
   sessions[id] = session;
   return session;
@@ -30,33 +33,32 @@ export const removeVoterFromSession = (sessionId: string, voterId: string) => {
 };
 
 export const getSession = (sessionId: string): Session | undefined => {
-  return sessions[sessionId];
+  const s = sessions[sessionId];
+  console.log(s);
+  return s;
 };
 
 export const addVideoToQueue = (sessionId: string, videoId: string) => {
   if (sessions[sessionId]) {
-    sessions[sessionId].videoQueue.push(videoId);
+    console.log(`Session: ${sessionId}: Adding Video: ${videoId}`);
+    const vid: Video = {id: videoId, title: '', vetoed: false};
+    sessions[sessionId].videoQueue.push(vid);
   }
 };
 
-export const getCurrentVideo = (sessionId: string): string | null => {
+export const progressVideo = (sessionId: string, veto?: boolean): Video|null => {
   if (sessions[sessionId]) {
     const session = sessions[sessionId];
-    return session.videoQueue[session.currentVideoIndex] || null;
-  }
-  return null;
-};
-
-export const skipCurrentVideo = (sessionId: string): string | null => {
-  if (sessions[sessionId]) {
-    const session = sessions[sessionId];
+    if(veto){
+      session.videoQueue[session.currentVideoIndex].vetoed = true;
+    }
     if (session.currentVideoIndex < session.videoQueue.length - 1) {
       session.currentVideoIndex++;
       return session.videoQueue[session.currentVideoIndex];
     }
   }
   return null;
-};
+}
 
 // Export sessions for external usage (if necessary)
 export const getSessions = () => sessions;
