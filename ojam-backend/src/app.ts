@@ -28,7 +28,8 @@ const server = http.createServer(app);
 
 const io = new SocketIOServer(server, {
   cors: {
-    origin: 'http://localhost:4200', // Allow Angular app
+    // origin: 'http://localhost:4200', // Allow Angular app
+    origin: 'https://code-jace.github.io/ojam2/', // Allow Angular app
     methods: ['GET', 'POST'],
   },
 });
